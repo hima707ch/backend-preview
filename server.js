@@ -6,7 +6,7 @@ require('dotenv').config();
 const userRoutes = require('./userRoutes');
 const propertyRoutes = require('./propertyRoutes');
 const adminRoutes = require('./adminRoutes');
-const { verifyToken } = require('./authMiddleware');
+const { verifyToken } = require('./middleware');
 
 const app = express();
 

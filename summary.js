@@ -1,64 +1,65 @@
 /*
 API Endpoints Summary:
 
-1. User Management:
-   - POST /api/register
-     Request: { username, password, email }
-     Response: { message: 'User registered successfully' }
+User Management:
+1. POST /api/register
+   - Request: { username, email, password }
+   - Response: { message: 'User registered successfully' }
 
-   - POST /api/login
-     Request: { username, password }
-     Response: { token }
+2. POST /api/login
+   - Request: { username, password }
+   - Response: { token: 'JWT_TOKEN' }
 
-   - GET /api/user/profile
-     Headers: { Authorization: 'Bearer <token>' }
-     Response: User object (excluding password)
+3. GET /api/user/profile
+   - Headers: Authorization: Bearer TOKEN
+   - Response: { user details }
 
-   - PUT /api/user/profile
-     Headers: { Authorization: 'Bearer <token>' }
-     Request: { fullName, phone, address }
-     Response: Updated user object
+4. PUT /api/user/profile
+   - Headers: Authorization: Bearer TOKEN
+   - Request: { updated user fields }
+   - Response: { message: 'Profile updated successfully' }
 
-2. Property Management:
-   - GET /api/properties
-     Response: Array of property objects
+Property Management:
+1. GET /api/properties
+   - Query Parameters: Optional filters
+   - Response: [{ property details }]
 
-   - POST /api/properties
-     Headers: { Authorization: 'Bearer <token>' }
-     Request: { title, description, price, location, features, images }
-     Response: Created property object
+2. POST /api/properties
+   - Headers: Authorization: Bearer TOKEN
+   - Request: { title, description, price, location }
+   - Response: { created property details }
 
-   - GET /api/properties/:id
-     Response: Property object
+3. GET /api/properties/:id
+   - Response: { property details }
 
-   - PUT /api/properties/:id
-     Headers: { Authorization: 'Bearer <token>' }
-     Request: Property update fields
-     Response: Updated property object
+4. PUT /api/properties/:id
+   - Headers: Authorization: Bearer TOKEN
+   - Request: { updated property fields }
+   - Response: { updated property details }
 
-   - DELETE /api/properties/:id
-     Headers: { Authorization: 'Bearer <token>' }
-     Response: { message: 'Property deleted successfully' }
+5. DELETE /api/properties/:id
+   - Headers: Authorization: Bearer TOKEN
+   - Response: { message: 'Property deleted successfully' }
 
-3. Admin Features:
-   - GET /api/admin/users
-     Headers: { Authorization: 'Bearer <token>' }
-     Response: Array of user objects
+Admin Features:
+1. GET /api/admin/users
+   - Headers: Authorization: Bearer TOKEN
+   - Response: [{ user details }]
 
-   - DELETE /api/admin/users/:userId
-     Headers: { Authorization: 'Bearer <token>' }
-     Response: { message: 'User deleted successfully' }
+2. DELETE /api/admin/users/:userId
+   - Headers: Authorization: Bearer TOKEN
+   - Response: { message: 'User deleted successfully' }
 
-   - GET /api/admin/listings
-     Headers: { Authorization: 'Bearer <token>' }
-     Response: Array of property objects with owner details
+3. GET /api/admin/listings
+   - Headers: Authorization: Bearer TOKEN
+   - Response: [{ property details with owner info }]
 
-   - PUT /api/admin/listings/:listingId
-     Headers: { Authorization: 'Bearer <token>' }
-     Request: Property update fields
-     Response: Updated property object
+4. PUT /api/admin/listings/:listingId
+   - Headers: Authorization: Bearer TOKEN
+   - Request: { updated property fields }
+   - Response: { updated property details }
 
-   - DELETE /api/admin/listings/:listingId
-     Headers: { Authorization: 'Bearer <token>' }
-     Response: { message: 'Listing deleted successfully' }
+5. DELETE /api/admin/listings/:listingId
+   - Headers: Authorization: Bearer TOKEN
+   - Response: { message: 'Listing deleted successfully' }
 */

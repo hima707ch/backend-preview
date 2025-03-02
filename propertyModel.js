@@ -6,9 +6,8 @@ const propertySchema = new mongoose.Schema({
   price: { type: Number, required: true },
   location: { type: String, required: true },
   owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  features: [String],
-  images: [String],
+  createdAt: { type: Date, default: Date.now },
   status: { type: String, enum: ['available', 'sold', 'rented'], default: 'available' }
-}, { timestamps: true });
+});
 
 module.exports = mongoose.model('Property', propertySchema);
