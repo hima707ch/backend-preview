@@ -1,54 +1,44 @@
 /*
 API Endpoints Summary:
 
-1. Authentication APIs:
+1. Authentication:
    - POST /api/login
-     Request: { email: string, password: string }
-     Response: { token: string, user: { id: string, email: string, role: string } }
+     Request: { username: string, password: string }
+     Response: { token: string, userId: string }
 
    - POST /api/register
-     Request: { email: string, password: string, name: string }
-     Response: { token: string, user: { id: string, email: string, role: string } }
+     Request: { username: string, email: string, password: string }
+     Response: { message: string, userId: string }
 
-2. Property APIs:
+2. Properties:
    - GET /api/properties
+     Query params: minPrice, maxPrice, location
      Response: Array of property objects
 
-   - POST /api/property
-     Auth: Required
-     Request: { title: string, description: string, price: number, location: string }
+   - POST /api/properties
+     Request: { title: string, description: string, price: number, location: string, ... }
      Response: Created property object
 
-   - GET /api/property/:id
+   - GET /api/properties/:id
      Response: Single property object
 
-   - PUT /api/property/:id
-     Auth: Required (Owner or Admin)
-     Request: Property fields to update
+   - PUT /api/properties/:id
+     Request: Updated property fields
      Response: Updated property object
 
-   - DELETE /api/property/:id
-     Auth: Required (Owner or Admin)
-     Response: { message: 'Property deleted' }
+   - DELETE /api/properties/:id
+     Response: { message: string }
 
-3. User APIs:
-   - GET /api/user/profile
-     Auth: Required
+3. User Profile:
+   - GET /api/user/:id
      Response: User object (excluding password)
 
-   - PUT /api/user/profile/update
-     Auth: Required
-     Request: { name?: string, email?: string }
-     Response: { message: string, user: object }
+   - PUT /api/user/:id
+     Request: Updated user fields
+     Response: Updated user object
 
-4. Admin APIs:
-   - GET /api/admin/dashboard
-     Auth: Required (Admin only)
-     Response: {
-       stats: { users: number, properties: number },
-       recentProperties: array,
-       recentUsers: array
-     }
+   - DELETE /api/user/:id
+     Response: { message: string }
 
-All APIs return appropriate error responses with status codes and messages.
+All protected routes require Authorization header with Bearer token.
 */

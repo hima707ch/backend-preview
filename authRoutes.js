@@ -1,20 +1,20 @@
 const express = require('express');
-const router = express.Router();
-const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const { User } = require('./models');
+const jwt = require('jsonwebtoken');
+const User = require('./userModel');
+const router = express.Router();
 
 router.post('/login', async (req, res) => {
   try {
-    const { email, password } = req.body;
-    const user = await User.findOne({ email });
+    const { username, password } = req.body;
+    const user = await User.findOne({ username });
     if (!user) return res.status(401).json({ message: 'Invalid credentials' });
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(401).json({ message: 'Invalid credentials' });
+    const isValid = await bcrypt.compare(password, user.password);
+    if (!isValid) return res.status(401).json({ message: 'Invalid credentials' });
 
-    const token = jwt.sign({ userId: user._id, role: user.role }, 'your_jwt_secret');
-    res.json({ token, user: { id: user._id, email: user.email, role: user.role } });
+    const token = jwt.sign({ userId: user._id }, 'your-secret-key', { expiresIn: '24h' });
+    res.json({ token, userId: user._id });
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
   }
@@ -22,17 +22,11 @@ router.post('/login', async (req, res) => {
 
 router.post('/register', async (req, res) => {
   try {
-    const { email, password, name } = req.body;
-    let user = await User.findOne({ email });
-    if (user) return res.status(400).json({ message: 'User already exists' });
-
-    user = new User({ email, password, name });
-    await user.save();
-
-    const token = jwt.sign({ userId: user._id, role: user.role }, 'your_jwt_secret');
-    res.status(201).json({ token, user: { id: user._id, email: user.email, role: user.role } });
+    const { username, email, password } = req.body;
+    const user = await User.create({ username, email, password });
+    res.status(201).json({ message: 'User created successfully', userId: user._id });
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    res.status(400).json({ message: 'Registration failed' });
   }
 });
 
