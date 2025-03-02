@@ -1,32 +1,47 @@
 const express = require('express');
+const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('./userModel');
-const router = express.Router();
+const { verifyToken } = require('./authMiddleware');
 
+// Register
+router.post('/register', async (req, res) => {
+  try {
+    const { username, password, email } = req.body;
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = new User({ username, password: hashedPassword, email });
+    await user.save();
+    res.status(201).json({ message: 'User registered successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Login
 router.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body;
     const user = await User.findOne({ username });
     if (!user) return res.status(401).json({ message: 'Invalid credentials' });
 
-    const isValid = await bcrypt.compare(password, user.password);
-    if (!isValid) return res.status(401).json({ message: 'Invalid credentials' });
+    const validPassword = await bcrypt.compare(password, user.password);
+    if (!validPassword) return res.status(401).json({ message: 'Invalid credentials' });
 
     const token = jwt.sign({ userId: user._id }, 'your-secret-key', { expiresIn: '24h' });
-    res.json({ token, userId: user._id });
+    res.json({ token });
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ error: error.message });
   }
 });
 
-router.post('/register', async (req, res) => {
+// Get user info
+router.get('/user', verifyToken, async (req, res) => {
   try {
-    const { username, email, password } = req.body;
-    const user = await User.create({ username, email, password });
-    res.status(201).json({ message: 'User created successfully', userId: user._id });
+    const user = await User.findById(req.user.userId).select('-password');
+    res.json(user);
   } catch (error) {
-    res.status(400).json({ message: 'Registration failed' });
+    res.status(500).json({ error: error.message });
   }
 });
 

@@ -5,7 +5,7 @@ require('dotenv').config();
 
 const authRoutes = require('./authRoutes');
 const propertyRoutes = require('./propertyRoutes');
-const userRoutes = require('./userRoutes');
+const { verifyToken } = require('./authMiddleware');
 
 const app = express();
 
@@ -17,8 +17,7 @@ mongoose.connect(process.env.MONGODB_URI)
   .catch(err => console.error('MongoDB connection error:', err));
 
 app.use('/api', authRoutes);
-app.use('/api', propertyRoutes);
-app.use('/api', userRoutes);
+app.use('/api/properties', verifyToken, propertyRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
