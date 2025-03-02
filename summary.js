@@ -1,43 +1,44 @@
 /*
 API Endpoints Summary:
 
-1. Authentication (/auth)
-   - POST /auth/register
-     Request: { username, password, email }
-     Response: { message: 'User registered successfully' }
-   - POST /auth/login
-     Request: { username, password }
-     Response: { token }
+1. Authentication:
+   - POST /api/auth/login
+     Request: { email: string, password: string }
+     Response: { token: string, user: { id: string, email: string, role: string } }
+   
+   - POST /api/auth/register
+     Request: { email: string, password: string, name: string, phone: string }
+     Response: { token: string, user: { id: string, email: string, role: string } }
 
-2. Properties (/properties)
-   - POST /properties
-     Request: { title, description, price, location }
-     Response: Created property object
-   - GET /properties
+2. Property Management:
+   - GET /api/properties
+     Query params: { location?: string, minPrice?: number, maxPrice?: number, status?: string }
      Response: Array of property objects
-   - PUT /properties/:id
-     Request: Updated property fields
+   
+   - POST /api/properties
+     Headers: Authorization: Bearer {token}
+     Request: { title: string, description: string, price: number, location: string, bedrooms?: number, bathrooms?: number, area?: number }
+     Response: Property object
+   
+   - GET /api/properties/:id
+     Response: Property object with owner details
+   
+   - PUT /api/properties/:id
+     Headers: Authorization: Bearer {token}
+     Request: Property update fields
      Response: Updated property object
-   - DELETE /properties/:id
-     Response: { message: 'Property deleted successfully' }
+   
+   - DELETE /api/properties/:id
+     Headers: Authorization: Bearer {token}
+     Response: { message: string }
 
-3. User Profile (/users)
-   - PUT /users/profile
-     Request: Updated user fields
-     Response: Updated user object
-   - DELETE /users/profile
-     Response: { message: 'User profile deleted successfully' }
-
-4. Admin Management (/admin)
-   - GET /admin/analytics
-     Response: Array of analytics objects
-   - PUT /admin/users/:id
-     Request: Updated user fields
-     Response: Updated user object
-   - DELETE /admin/users/:id
-     Response: { message: 'User deleted successfully' }
-
-Authentication:
-- All endpoints except /auth/login and /auth/register require Bearer token
-- Admin endpoints require admin role
+3. User Profile Management:
+   - GET /api/user/profile
+     Headers: Authorization: Bearer {token}
+     Response: User object (excluding password)
+   
+   - PUT /api/user/profile
+     Headers: Authorization: Bearer {token}
+     Request: { name?: string, phone?: string }
+     Response: Updated user object (excluding password)
 */
