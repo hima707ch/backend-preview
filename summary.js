@@ -1,53 +1,64 @@
 /*
 API Endpoints Summary:
 
-1. Authentication APIs:
-   - POST /api/auth/register
-     Request: { email: string, password: string, name: string }
-     Response: { message: string }
+1. User Management:
+   - POST /api/register
+     Request: { username, password, email }
+     Response: { message: 'User registered successfully' }
 
-   - POST /api/auth/login
-     Request: { email: string, password: string }
-     Response: { token: string }
+   - POST /api/login
+     Request: { username, password }
+     Response: { token }
 
-   - POST /api/auth/logout
-     Response: { message: string }
+   - GET /api/user/profile
+     Headers: { Authorization: 'Bearer <token>' }
+     Response: User object (excluding password)
 
-2. Property APIs:
+   - PUT /api/user/profile
+     Headers: { Authorization: 'Bearer <token>' }
+     Request: { fullName, phone, address }
+     Response: Updated user object
+
+2. Property Management:
    - GET /api/properties
-     Query Parameters: Any property field for filtering
      Response: Array of property objects
 
    - POST /api/properties
-     Request: {
-       title: string,
-       description: string,
-       price: number,
-       location: string,
-       bedrooms: number,
-       bathrooms: number,
-       area: number,
-       type: string
-     }
+     Headers: { Authorization: 'Bearer <token>' }
+     Request: { title, description, price, location, features, images }
      Response: Created property object
 
    - GET /api/properties/:id
      Response: Property object
 
    - PUT /api/properties/:id
-     Request: Updated property fields
+     Headers: { Authorization: 'Bearer <token>' }
+     Request: Property update fields
      Response: Updated property object
 
    - DELETE /api/properties/:id
-     Response: { message: string }
+     Headers: { Authorization: 'Bearer <token>' }
+     Response: { message: 'Property deleted successfully' }
 
-3. User Profile APIs:
-   - GET /api/user/profile
-     Response: User object (excluding password)
+3. Admin Features:
+   - GET /api/admin/users
+     Headers: { Authorization: 'Bearer <token>' }
+     Response: Array of user objects
 
-   - PUT /api/user/profile
-     Request: Updated user fields
-     Response: Updated user object (excluding password)
+   - DELETE /api/admin/users/:userId
+     Headers: { Authorization: 'Bearer <token>' }
+     Response: { message: 'User deleted successfully' }
 
-Note: All APIs except /api/auth/* require Bearer token authentication
+   - GET /api/admin/listings
+     Headers: { Authorization: 'Bearer <token>' }
+     Response: Array of property objects with owner details
+
+   - PUT /api/admin/listings/:listingId
+     Headers: { Authorization: 'Bearer <token>' }
+     Request: Property update fields
+     Response: Updated property object
+
+   - DELETE /api/admin/listings/:listingId
+     Headers: { Authorization: 'Bearer <token>' }
+     Response: { message: 'Listing deleted successfully' }
 */

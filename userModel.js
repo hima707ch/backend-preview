@@ -1,33 +1,23 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
-  email: { type: String, required: true, unique: true },
+  username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  name: { type: String, required: true },
-  createdAt: { type: Date, default: Date.now }
+  email: { type: String, required: true, unique: true },
+  isAdmin: { type: Boolean, default: false },
+  profile: {
+    fullName: String,
+    phone: String,
+    address: String
+  }
+}, { timestamps: true });
+
+userSchema.pre('save', async function(next) {
+  if (this.isModified('password')) {
+    this.password = await bcrypt.hash(this.password, 10);
+  }
+  next();
 });
 
 module.exports = mongoose.model('User', userSchema);
-
-// Create default admin user
-const bcrypt = require('bcryptjs');
-const User = mongoose.model('User', userSchema);
-
-async function createAdminUser() {
-  try {
-    const adminExists = await User.findOne({ email: 'admin' });
-    if (!adminExists) {
-      const hashedPassword = await bcrypt.hash('admin', 10);
-      await User.create({
-        email: 'admin',
-        password: hashedPassword,
-        name: 'Admin User'
-      });
-      console.log('Admin user created');
-    }
-  } catch (error) {
-    console.error('Error creating admin user:', error);
-  }
-}
-
-createAdminUser();

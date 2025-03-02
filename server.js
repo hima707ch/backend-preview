@@ -3,10 +3,10 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
 
-const authRoutes = require('./authRoutes');
-const propertyRoutes = require('./propertyRoutes');
 const userRoutes = require('./userRoutes');
-const { authenticateToken } = require('./middleware');
+const propertyRoutes = require('./propertyRoutes');
+const adminRoutes = require('./adminRoutes');
+const { verifyToken } = require('./authMiddleware');
 
 const app = express();
 
@@ -17,11 +17,9 @@ mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('Connected to MongoDB'))
   .catch(err => console.error('MongoDB connection error:', err));
 
-app.use('/api/auth', authRoutes);
-app.use('/api/properties', authenticateToken, propertyRoutes);
-app.use('/api/user', authenticateToken, userRoutes);
+app.use('/api', userRoutes);
+app.use('/api/properties', propertyRoutes);
+app.use('/api/admin', verifyToken, adminRoutes);
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
