@@ -1,45 +1,47 @@
 const mongoose = require('mongoose');
-const { User, Property, Analytics } = require('./models');
+const { User, Property } = require('./models');
 require('dotenv').config();
 
-mongoose.connect(process.env.MONGODB_URI)
-  .then(async () => {
-    console.log('Connected to MongoDB');
+const initializeDb = async () => {
+  try {
+    await mongoose.connect(process.env.MONGODB_URI);
 
     // Create admin user
-    await User.create({
-      username: 'admin',
+    const adminUser = new User({
+      email: 'admin',
       password: 'admin',
-      email: 'admin@example.com',
+      name: 'Admin User',
       role: 'admin'
     });
+    await adminUser.save();
 
     // Create sample properties
-    await Property.create([
+    const properties = [
       {
         title: 'Luxury Villa',
-        description: 'Beautiful villa with ocean view',
-        price: 1000000,
-        location: 'Miami Beach'
+        description: 'Beautiful 4-bedroom villa with pool',
+        price: 500000,
+        location: 'Miami, FL',
+        owner: adminUser._id,
+        status: 'available'
       },
       {
         title: 'City Apartment',
-        description: 'Modern apartment in downtown',
-        price: 500000,
-        location: 'New York City'
+        description: 'Modern 2-bedroom apartment in downtown',
+        price: 300000,
+        location: 'New York, NY',
+        owner: adminUser._id,
+        status: 'available'
       }
-    ]);
+    ];
 
-    // Create sample analytics
-    await Analytics.create({
-      visits: 100,
-      pageViews: 500
-    });
-
-    console.log('Sample data created successfully');
-    process.exit(0);
-  })
-  .catch(error => {
+    await Property.insertMany(properties);
+    console.log('Database initialized with sample data');
+  } catch (error) {
     console.error('Error initializing database:', error);
-    process.exit(1);
-  });
+  } finally {
+    mongoose.disconnect();
+  }
+};
+
+initializeDb();

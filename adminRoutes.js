@@ -1,43 +1,32 @@
 const express = require('express');
 const router = express.Router();
-const { User, Analytics } = require('./models');
-const auth = require('./middleware/auth');
-const admin = require('./middleware/admin');
+const { User, Property } = require('./models');
+const auth = require('./middleware');
+const adminAuth = require('./adminMiddleware');
 
-router.get('/analytics', [auth, admin], async (req, res) => {
+router.get('/dashboard', [auth, adminAuth], async (req, res) => {
   try {
-    const analytics = await Analytics.find();
-    res.json(analytics);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
+    const userCount = await User.countDocuments();
+    const propertyCount = await Property.countDocuments();
+    const recentProperties = await Property.find()
+      .sort('-createdAt')
+      .limit(5)
+      .populate('owner', 'name email');
+    const recentUsers = await User.find()
+      .sort('-createdAt')
+      .limit(5)
+      .select('-password');
 
-router.put('/users/:id', [auth, admin], async (req, res) => {
-  try {
-    const user = await User.findByIdAndUpdate(
-      req.params.id,
-      { $set: req.body },
-      { new: true }
-    ).select('-password');
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-    res.json(user);
+    res.json({
+      stats: {
+        users: userCount,
+        properties: propertyCount
+      },
+      recentProperties,
+      recentUsers
+    });
   } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
-
-router.delete('/users/:id', [auth, admin], async (req, res) => {
-  try {
-    const user = await User.findByIdAndDelete(req.params.id);
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-    res.json({ message: 'User deleted successfully' });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(500).json({ message: 'Server error' });
   }
 });
 

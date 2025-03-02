@@ -2,26 +2,11 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
-  username: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
   email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  name: String,
   role: { type: String, enum: ['user', 'admin'], default: 'user' },
   createdAt: { type: Date, default: Date.now }
-});
-
-const propertySchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  description: { type: String, required: true },
-  price: { type: Number, required: true },
-  location: { type: String, required: true },
-  owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  createdAt: { type: Date, default: Date.now }
-});
-
-const analyticsSchema = new mongoose.Schema({
-  visits: { type: Number, default: 0 },
-  date: { type: Date, default: Date.now },
-  pageViews: { type: Number, default: 0 }
 });
 
 userSchema.pre('save', async function(next) {
@@ -31,8 +16,17 @@ userSchema.pre('save', async function(next) {
   next();
 });
 
+const propertySchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  description: String,
+  price: { type: Number, required: true },
+  location: String,
+  owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  status: { type: String, enum: ['available', 'sold', 'rented'], default: 'available' },
+  createdAt: { type: Date, default: Date.now }
+});
+
 const User = mongoose.model('User', userSchema);
 const Property = mongoose.model('Property', propertySchema);
-const Analytics = mongoose.model('Analytics', analyticsSchema);
 
-module.exports = { User, Property, Analytics };
+module.exports = { User, Property };

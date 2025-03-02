@@ -1,44 +1,54 @@
 /*
 API Endpoints Summary:
 
-1. Authentication:
-   - POST /api/auth/login
+1. Authentication APIs:
+   - POST /api/login
      Request: { email: string, password: string }
      Response: { token: string, user: { id: string, email: string, role: string } }
-   
-   - POST /api/auth/register
-     Request: { email: string, password: string, name: string, phone: string }
+
+   - POST /api/register
+     Request: { email: string, password: string, name: string }
      Response: { token: string, user: { id: string, email: string, role: string } }
 
-2. Property Management:
+2. Property APIs:
    - GET /api/properties
-     Query params: { location?: string, minPrice?: number, maxPrice?: number, status?: string }
      Response: Array of property objects
-   
-   - POST /api/properties
-     Headers: Authorization: Bearer {token}
-     Request: { title: string, description: string, price: number, location: string, bedrooms?: number, bathrooms?: number, area?: number }
-     Response: Property object
-   
-   - GET /api/properties/:id
-     Response: Property object with owner details
-   
-   - PUT /api/properties/:id
-     Headers: Authorization: Bearer {token}
-     Request: Property update fields
-     Response: Updated property object
-   
-   - DELETE /api/properties/:id
-     Headers: Authorization: Bearer {token}
-     Response: { message: string }
 
-3. User Profile Management:
+   - POST /api/property
+     Auth: Required
+     Request: { title: string, description: string, price: number, location: string }
+     Response: Created property object
+
+   - GET /api/property/:id
+     Response: Single property object
+
+   - PUT /api/property/:id
+     Auth: Required (Owner or Admin)
+     Request: Property fields to update
+     Response: Updated property object
+
+   - DELETE /api/property/:id
+     Auth: Required (Owner or Admin)
+     Response: { message: 'Property deleted' }
+
+3. User APIs:
    - GET /api/user/profile
-     Headers: Authorization: Bearer {token}
+     Auth: Required
      Response: User object (excluding password)
-   
-   - PUT /api/user/profile
-     Headers: Authorization: Bearer {token}
-     Request: { name?: string, phone?: string }
-     Response: Updated user object (excluding password)
+
+   - PUT /api/user/profile/update
+     Auth: Required
+     Request: { name?: string, email?: string }
+     Response: { message: string, user: object }
+
+4. Admin APIs:
+   - GET /api/admin/dashboard
+     Auth: Required (Admin only)
+     Response: {
+       stats: { users: number, properties: number },
+       recentProperties: array,
+       recentUsers: array
+     }
+
+All APIs return appropriate error responses with status codes and messages.
 */
