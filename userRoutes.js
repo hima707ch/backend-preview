@@ -41,7 +41,7 @@ router.post('/user/:userId/save-property', async (req, res) => {
             req.params.userId,
             { $addToSet: { savedProperties: propertyId } },
             { new: true }
-        ).select('-password');
+        );
         res.json(user);
     } catch (error) {
         res.status(500).json({ message: 'Server error' });
@@ -54,7 +54,7 @@ router.delete('/user/:userId/remove-property/:propertyId', async (req, res) => {
             req.params.userId,
             { $pull: { savedProperties: req.params.propertyId } },
             { new: true }
-        ).select('-password');
+        );
         res.json(user);
     } catch (error) {
         res.status(500).json({ message: 'Server error' });

@@ -12,6 +12,8 @@ const propertySchema = new mongoose.Schema({
     },
     features: [String],
     images: [String],
+    type: String,
+    status: String,
     createdAt: { type: Date, default: Date.now }
 });
 
@@ -28,26 +30,28 @@ async function addSampleProperties() {
                     description: 'Beautiful 4-bedroom villa with pool',
                     price: 500000,
                     location: {
-                        address: '123 Luxury Lane',
-                        city: 'Beverly Hills',
-                        state: 'CA',
-                        zipCode: '90210'
+                        address: '123 Main St',
+                        city: 'Miami',
+                        state: 'FL',
+                        zipCode: '33101'
                     },
                     features: ['Pool', 'Garden', 'Garage'],
-                    images: ['villa1.jpg', 'villa2.jpg']
+                    type: 'Villa',
+                    status: 'Available'
                 },
                 {
-                    title: 'City Apartment',
-                    description: 'Modern 2-bedroom apartment',
-                    price: 300000,
+                    title: 'Modern Apartment',
+                    description: '2-bedroom apartment in city center',
+                    price: 250000,
                     location: {
-                        address: '456 Urban Street',
+                        address: '456 Park Ave',
                         city: 'New York',
                         state: 'NY',
                         zipCode: '10001'
                     },
-                    features: ['Balcony', 'Gym', 'Parking'],
-                    images: ['apt1.jpg', 'apt2.jpg']
+                    features: ['Elevator', 'Parking', 'Security'],
+                    type: 'Apartment',
+                    status: 'Available'
                 }
             ]);
         }

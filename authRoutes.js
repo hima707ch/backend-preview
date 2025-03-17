@@ -13,12 +13,12 @@ router.post('/login', async (req, res) => {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
 
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
+        const isValid = await bcrypt.compare(password, user.password);
+        if (!isValid) {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
 
-        const token = jwt.sign({ userId: user._id }, 'your_jwt_secret', { expiresIn: '1h' });
+        const token = jwt.sign({ userId: user._id }, 'your-secret-key', { expiresIn: '24h' });
         res.json({ token, userId: user._id });
     } catch (error) {
         res.status(500).json({ message: 'Server error' });
@@ -35,7 +35,7 @@ router.post('/register', async (req, res) => {
         }
 
         const user = await User.create({ username, email, password });
-        const token = jwt.sign({ userId: user._id }, 'your_jwt_secret', { expiresIn: '1h' });
+        const token = jwt.sign({ userId: user._id }, 'your-secret-key', { expiresIn: '24h' });
         res.status(201).json({ token, userId: user._id });
     } catch (error) {
         res.status(500).json({ message: 'Server error' });

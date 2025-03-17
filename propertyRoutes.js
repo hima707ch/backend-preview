@@ -4,10 +4,11 @@ const Property = require('./propertyModel');
 
 router.get('/properties/search', async (req, res) => {
     try {
-        const { city, minPrice, maxPrice } = req.query;
+        const { type, city, minPrice, maxPrice } = req.query;
         let query = {};
 
-        if (city) query['location.city'] = new RegExp(city, 'i');
+        if (type) query.type = type;
+        if (city) query['location.city'] = city;
         if (minPrice || maxPrice) {
             query.price = {};
             if (minPrice) query.price.$gte = Number(minPrice);
