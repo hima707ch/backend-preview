@@ -1,39 +1,52 @@
 /*
 API Endpoints Summary:
 
-Authentication Endpoints:
-1. POST /api/register
-   - Request: { username: string, password: string, email: string }
-   - Response: { message: string }
+1. Authentication
+   - POST /api/login
+     Request: { username: string, password: string }
+     Response: { token: string, userId: string }
 
-2. POST /api/login
-   - Request: { username: string, password: string }
-   - Response: { token: string }
+   - POST /api/register
+     Request: { username: string, email: string, password: string }
+     Response: { token: string, userId: string }
 
-3. GET /api/user
-   - Headers: Authorization: Bearer <token>
-   - Response: { _id: string, username: string, email: string, createdAt: date }
+2. Property Management
+   - GET /api/properties/search
+     Query Parameters: { city?: string, minPrice?: number, maxPrice?: number }
+     Response: Array of property objects
 
-Property Endpoints (all require Authorization header):
-1. POST /api/properties
-   - Request: { title: string, description: string, price: number, location: string, type: string, bedrooms: number, bathrooms: number, area: number }
-   - Response: Property object
+   - GET /api/properties/:id
+     Response: Single property object
 
-2. GET /api/properties
-   - Query Parameters: Any property field for filtering
-   - Response: Array of property objects
+   - POST /api/user/:userId/save-property
+     Request: { propertyId: string }
+     Response: Updated user object
 
-3. GET /api/properties/:id
-   - Response: Property object
+   - DELETE /api/user/:userId/remove-property/:propertyId
+     Response: Updated user object
 
-4. PUT /api/properties/:id
-   - Request: Any property fields to update
-   - Response: Updated property object
+3. User Management
+   - GET /api/user/:userId
+     Response: User object (excluding password)
 
-5. DELETE /api/properties/:id
-   - Response: { message: string }
+   - POST /api/user/:userId/update
+     Request: { name: string, phone: string, address: string }
+     Response: Updated user object
 
-Database Initialization:
-- Default admin user: username: 'admin', password: 'admin'
-- Sample properties are created automatically
+Database Models:
+1. User Schema:
+   - username (String, required, unique)
+   - password (String, required)
+   - email (String, required, unique)
+   - savedProperties (Array of Property references)
+   - profile: { name, phone, address }
+
+2. Property Schema:
+   - title (String, required)
+   - description (String, required)
+   - price (Number, required)
+   - location: { address, city, state, zipCode }
+   - features (Array of Strings)
+   - images (Array of Strings)
+   - createdAt (Date)
 */
