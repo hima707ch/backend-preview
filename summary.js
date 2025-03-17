@@ -1,54 +1,32 @@
 /*
 API Endpoints Summary:
 
-1. Authentication APIs:
-   - POST /api/login
-     Request: { username: string, password: string }
-     Response: { token: string, userId: string }
+1. User Authentication:
+   a. POST /api/register
+      - Request body: { username: string, password: string }
+      - Response: { token: string }
 
-   - POST /api/register
-     Request: { username: string, email: string, password: string }
-     Response: { token: string, userId: string }
+   b. POST /api/login
+      - Request body: { username: string, password: string }
+      - Response: { token: string }
 
-2. Property APIs:
-   - GET /api/properties/search
-     Query Parameters: type, city, minPrice, maxPrice
-     Response: Array of property objects
+2. Property Management (All require Authorization header with Bearer token):
+   a. GET /api/properties
+      - Response: Array of properties
+      - Each property: { _id, title, description, price, location, owner, createdAt, updatedAt }
 
-   - GET /api/properties/:id
-     Response: Single property object
+   b. POST /api/properties
+      - Request body: { title: string, description: string, price: number, location: string }
+      - Response: Created property object
 
-3. User Management APIs:
-   - GET /api/user/:userId
-     Response: User object (excluding password) with populated savedProperties
+   c. PUT /api/properties/:propertyId
+      - Request body: { title?: string, description?: string, price?: number, location?: string }
+      - Response: Updated property object
 
-   - POST /api/user/:userId/update
-     Request: { name: string, phone: string, address: string }
-     Response: Updated user object
+   d. DELETE /api/properties/:propertyId
+      - Response: { message: 'Property deleted successfully' }
 
-   - POST /api/user/:userId/save-property
-     Request: { propertyId: string }
-     Response: Updated user object
-
-   - DELETE /api/user/:userId/remove-property/:propertyId
-     Response: Updated user object
-
-Database Models:
-1. User Model:
-   - username (String, required, unique)
-   - password (String, required)
-   - email (String, required, unique)
-   - savedProperties (Array of Property references)
-   - profile (Object: name, phone, address)
-
-2. Property Model:
-   - title (String, required)
-   - description (String, required)
-   - price (Number, required)
-   - location (Object: address, city, state, zipCode)
-   - features (Array of Strings)
-   - images (Array of Strings)
-   - type (String)
-   - status (String)
-   - createdAt (Date)
+Note: Default admin user credentials:
+- Username: admin
+- Password: admin
 */

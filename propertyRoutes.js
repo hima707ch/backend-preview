@@ -1,37 +1,74 @@
 const express = require('express');
-const router = express.Router();
 const Property = require('./propertyModel');
+const router = express.Router();
 
-router.get('/properties/search', async (req, res) => {
-    try {
-        const { type, city, minPrice, maxPrice } = req.query;
-        let query = {};
-
-        if (type) query.type = type;
-        if (city) query['location.city'] = city;
-        if (minPrice || maxPrice) {
-            query.price = {};
-            if (minPrice) query.price.$gte = Number(minPrice);
-            if (maxPrice) query.price.$lte = Number(maxPrice);
-        }
-
-        const properties = await Property.find(query);
-        res.json(properties);
-    } catch (error) {
-        res.status(500).json({ message: 'Server error' });
-    }
+// Get all properties for logged-in user
+router.get('/', async (req, res) => {
+  try {
+    const properties = await Property.find({ owner: req.user.userId });
+    res.json(properties);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching properties' });
+  }
 });
 
-router.get('/properties/:id', async (req, res) => {
-    try {
-        const property = await Property.findById(req.params.id);
-        if (!property) {
-            return res.status(404).json({ message: 'Property not found' });
-        }
-        res.json(property);
-    } catch (error) {
-        res.status(500).json({ message: 'Server error' });
+// Add new property
+router.post('/', async (req, res) => {
+  try {
+    const { title, description, price, location } = req.body;
+    const property = await Property.create({
+      title,
+      description,
+      price,
+      location,
+      owner: req.user.userId
+    });
+    res.status(201).json(property);
+  } catch (error) {
+    res.status(500).json({ message: 'Error creating property' });
+  }
+});
+
+// Update property
+router.put('/:propertyId', async (req, res) => {
+  try {
+    const property = await Property.findOne({
+      _id: req.params.propertyId,
+      owner: req.user.userId
+    });
+
+    if (!property) {
+      return res.status(404).json({ message: 'Property not found' });
     }
+
+    const updatedProperty = await Property.findByIdAndUpdate(
+      req.params.propertyId,
+      req.body,
+      { new: true }
+    );
+
+    res.json(updatedProperty);
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating property' });
+  }
+});
+
+// Delete property
+router.delete('/:propertyId', async (req, res) => {
+  try {
+    const property = await Property.findOneAndDelete({
+      _id: req.params.propertyId,
+      owner: req.user.userId
+    });
+
+    if (!property) {
+      return res.status(404).json({ message: 'Property not found' });
+    }
+
+    res.json({ message: 'Property deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting property' });
+  }
 });
 
 module.exports = router;
