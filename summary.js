@@ -1,32 +1,39 @@
 /*
 API Endpoints Summary:
 
-1. User Authentication:
-   a. POST /api/register
-      - Request body: { username: string, password: string }
-      - Response: { token: string }
+1. Authentication Endpoints:
+   - POST /auth/register
+     Request body: { username: string, password: string }
+     Response: { message: string }
 
-   b. POST /api/login
-      - Request body: { username: string, password: string }
-      - Response: { token: string }
+   - POST /auth/login
+     Request body: { username: string, password: string }
+     Response: { token: string }
 
-2. Property Management (All require Authorization header with Bearer token):
-   a. GET /api/properties
-      - Response: Array of properties
-      - Each property: { _id, title, description, price, location, owner, createdAt, updatedAt }
+2. Property Endpoints:
+   - GET /properties
+     Response: Array of properties
+     No authentication required
 
-   b. POST /api/properties
-      - Request body: { title: string, description: string, price: number, location: string }
-      - Response: Created property object
+   - GET /properties/:id
+     Response: Single property object
+     No authentication required
 
-   c. PUT /api/properties/:propertyId
-      - Request body: { title?: string, description?: string, price?: number, location?: string }
-      - Response: Updated property object
+   - POST /properties
+     Request body: { title: string, description: string, price: number, location: string }
+     Headers: Authorization: Bearer <token>
+     Response: Created property object
 
-   d. DELETE /api/properties/:propertyId
-      - Response: { message: 'Property deleted successfully' }
+   - PUT /properties/:id
+     Request body: { title?: string, description?: string, price?: number, location?: string }
+     Headers: Authorization: Bearer <token>
+     Response: Updated property object
 
-Note: Default admin user credentials:
-- Username: admin
-- Password: admin
+   - DELETE /properties/:id
+     Headers: Authorization: Bearer <token>
+     Response: { message: string }
+
+Note: The default admin user is created with:
+- Username: "admin"
+- Password: "admin"
 */
