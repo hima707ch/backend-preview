@@ -1,37 +1,39 @@
 const mongoose = require('mongoose');
-const User = require('./models/User');
-const Post = require('./models/Post');
-const Comment = require('./models/Comment');
+const bcrypt = require('bcryptjs');
+const User = require('./userModel');
+const Property = require('./propertyModel');
 require('dotenv').config();
 
 mongoose.connect(process.env.MONGODB_URI)
   .then(async () => {
     // Create admin user
-    const adminUser = await User.create({
+    const adminPassword = await bcrypt.hash('admin', 10);
+    const adminUser = new User({
       username: 'admin',
-      email: 'admin@example.com',
-      password: 'admin'
+      email: 'admin',
+      password: adminPassword,
+      role: 'admin'
     });
+    await adminUser.save();
 
-    // Create sample post
-    const samplePost = await Post.create({
-      title: 'Welcome to our Blog',
-      content: 'This is a sample blog post.',
-      author: adminUser._id,
-      category: 'General'
+    // Create sample property
+    const sampleProperty = new Property({
+      title: 'Luxury Apartment',
+      description: 'Beautiful apartment with ocean view',
+      type: 'apartment',
+      price: 500000,
+      location: 'Miami Beach',
+      bedrooms: 3,
+      bathrooms: 2,
+      area: 2000,
+      seller: adminUser._id
     });
-
-    // Create sample comment
-    await Comment.create({
-      content: 'Great first post!',
-      author: adminUser._id,
-      post: samplePost._id
-    });
+    await sampleProperty.save();
 
     console.log('Sample data created successfully');
-    process.exit(0);
+    process.exit();
   })
-  .catch(error => {
-    console.error('Error seeding data:', error);
+  .catch(err => {
+    console.error('Error seeding data:', err);
     process.exit(1);
   });

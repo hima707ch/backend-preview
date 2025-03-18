@@ -1,85 +1,49 @@
 const express = require('express');
-const Property = require('./propertyModel');
-const authMiddleware = require('./authMiddleware');
-
 const router = express.Router();
+const Property = require('./propertyModel');
+const { auth } = require('./middleware');
 
-// Get all properties
-router.get('/', async (req, res) => {
-    try {
-        const properties = await Property.find().populate('owner', 'username');
-        res.json(properties);
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching properties' });
-    }
+router.post('/add', auth, async (req, res) => {
+  try {
+    const property = new Property({
+      ...req.body,
+      seller: req.user.userId
+    });
+    await property.save();
+    res.status(201).json(property);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 });
 
-// Get single property
+router.get('/list', async (req, res) => {
+  try {
+    const { type, location, minPrice, maxPrice } = req.query;
+    let query = {};
+    if (type) query.type = type;
+    if (location) query.location = new RegExp(location, 'i');
+    if (minPrice || maxPrice) {
+      query.price = {};
+      if (minPrice) query.price.$gte = Number(minPrice);
+      if (maxPrice) query.price.$lte = Number(maxPrice);
+    }
+    const properties = await Property.find(query).populate('seller', 'username email');
+    res.json(properties);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 router.get('/:id', async (req, res) => {
-    try {
-        const property = await Property.findById(req.params.id).populate('owner', 'username');
-        if (!property) {
-            return res.status(404).json({ message: 'Property not found' });
-        }
-        res.json(property);
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching property' });
+  try {
+    const property = await Property.findById(req.params.id).populate('seller', 'username email');
+    if (!property) {
+      return res.status(404).json({ message: 'Property not found' });
     }
-});
-
-// Create property
-router.post('/', authMiddleware, async (req, res) => {
-    try {
-        const property = await Property.create({
-            ...req.body,
-            owner: req.user.userId
-        });
-        res.status(201).json(property);
-    } catch (error) {
-        res.status(500).json({ message: 'Error creating property' });
-    }
-});
-
-// Update property
-router.put('/:id', authMiddleware, async (req, res) => {
-    try {
-        const property = await Property.findById(req.params.id);
-        if (!property) {
-            return res.status(404).json({ message: 'Property not found' });
-        }
-
-        if (property.owner.toString() !== req.user.userId) {
-            return res.status(403).json({ message: 'Not authorized' });
-        }
-
-        const updatedProperty = await Property.findByIdAndUpdate(
-            req.params.id,
-            req.body,
-            { new: true }
-        );
-        res.json(updatedProperty);
-    } catch (error) {
-        res.status(500).json({ message: 'Error updating property' });
-    }
-});
-
-// Delete property
-router.delete('/:id', authMiddleware, async (req, res) => {
-    try {
-        const property = await Property.findById(req.params.id);
-        if (!property) {
-            return res.status(404).json({ message: 'Property not found' });
-        }
-
-        if (property.owner.toString() !== req.user.userId) {
-            return res.status(403).json({ message: 'Not authorized' });
-        }
-
-        await Property.findByIdAndDelete(req.params.id);
-        res.json({ message: 'Property deleted successfully' });
-    } catch (error) {
-        res.status(500).json({ message: 'Error deleting property' });
-    }
+    res.json(property);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 });
 
 module.exports = router;

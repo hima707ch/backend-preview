@@ -1,39 +1,37 @@
 /*
 API Endpoints Summary:
 
-1. Authentication Endpoints:
-   - POST /auth/register
-     Request body: { username: string, password: string }
-     Response: { message: string }
+1. POST /api/users/register
+   - Description: Register new user
+   - Request Body: { username, email, password, role }
+   - Response: { message: 'User registered successfully' }
 
-   - POST /auth/login
-     Request body: { username: string, password: string }
-     Response: { token: string }
+2. POST /api/users/login
+   - Description: User authentication
+   - Request Body: { email, password }
+   - Response: { token, userId, role }
 
-2. Property Endpoints:
-   - GET /properties
-     Response: Array of properties
-     No authentication required
+3. GET /api/users/:id
+   - Description: Get user details
+   - Headers: Authorization: Bearer <token>
+   - Response: User object (excluding password)
 
-   - GET /properties/:id
-     Response: Single property object
-     No authentication required
+4. POST /api/properties/add
+   - Description: Add new property listing
+   - Headers: Authorization: Bearer <token>
+   - Request Body: { title, description, type, price, location, bedrooms, bathrooms, area }
+   - Response: Created property object
 
-   - POST /properties
-     Request body: { title: string, description: string, price: number, location: string }
-     Headers: Authorization: Bearer <token>
-     Response: Created property object
+5. GET /api/properties/list
+   - Description: Get property listings
+   - Query Parameters: type, location, minPrice, maxPrice
+   - Response: Array of property objects
 
-   - PUT /properties/:id
-     Request body: { title?: string, description?: string, price?: number, location?: string }
-     Headers: Authorization: Bearer <token>
-     Response: Updated property object
+6. GET /api/properties/:id
+   - Description: Get specific property details
+   - Response: Property object with seller details
 
-   - DELETE /properties/:id
-     Headers: Authorization: Bearer <token>
-     Response: { message: string }
-
-Note: The default admin user is created with:
-- Username: "admin"
-- Password: "admin"
+Note: Default admin credentials:
+- Email: admin
+- Password: admin
 */
