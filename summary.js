@@ -1,37 +1,43 @@
 /*
 API Endpoints Summary:
 
-1. POST /api/users/register
-   - Description: Register new user
-   - Request Body: { username, email, password, role }
-   - Response: { message: 'User registered successfully' }
+1. User Management:
+   a. POST /api/users/register
+      - Request: { username: string, password: string, role: 'buyer'|'seller' }
+      - Response: { message: string }
+   
+   b. POST /api/users/login
+      - Request: { username: string, password: string }
+      - Response: { token: string, role: string }
 
-2. POST /api/users/login
-   - Description: User authentication
-   - Request Body: { email, password }
-   - Response: { token, userId, role }
+2. Property Management:
+   a. GET /api/properties/list
+      - Headers: Authorization: Bearer <token>
+      - Response: Array of properties
 
-3. GET /api/users/:id
-   - Description: Get user details
-   - Headers: Authorization: Bearer <token>
-   - Response: User object (excluding password)
+   b. GET /api/properties/details/:id
+      - Headers: Authorization: Bearer <token>
+      - Response: Property details
 
-4. POST /api/properties/add
-   - Description: Add new property listing
-   - Headers: Authorization: Bearer <token>
-   - Request Body: { title, description, type, price, location, bedrooms, bathrooms, area }
-   - Response: Created property object
+   c. POST /api/properties/add
+      - Headers: Authorization: Bearer <token>
+      - Role: seller
+      - Request: { title: string, description: string, price: number, location: string }
+      - Response: Created property object
 
-5. GET /api/properties/list
-   - Description: Get property listings
-   - Query Parameters: type, location, minPrice, maxPrice
-   - Response: Array of property objects
+   d. POST /api/properties/edit/:id
+      - Headers: Authorization: Bearer <token>
+      - Role: seller
+      - Request: { title?: string, description?: string, price?: number, location?: string }
+      - Response: Updated property object
 
-6. GET /api/properties/:id
-   - Description: Get specific property details
-   - Response: Property object with seller details
+   e. DELETE /api/properties/delete/:id
+      - Headers: Authorization: Bearer <token>
+      - Role: seller
+      - Response: { message: string }
 
-Note: Default admin credentials:
-- Email: admin
-- Password: admin
+Authentication:
+- All property endpoints require JWT token authentication
+- Token format: Bearer <token>
+- Seller-specific endpoints check for seller role
 */

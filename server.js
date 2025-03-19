@@ -5,7 +5,7 @@ require('dotenv').config();
 
 const userRoutes = require('./userRoutes');
 const propertyRoutes = require('./propertyRoutes');
-const { errorHandler } = require('./middleware');
+const { authenticateToken } = require('./middleware');
 
 const app = express();
 
@@ -17,8 +17,9 @@ mongoose.connect(process.env.MONGODB_URI)
   .catch(err => console.error('MongoDB connection error:', err));
 
 app.use('/api/users', userRoutes);
-app.use('/api/properties', propertyRoutes);
-app.use(errorHandler);
+app.use('/api/properties', authenticateToken, propertyRoutes);
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
