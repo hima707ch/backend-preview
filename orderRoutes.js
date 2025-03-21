@@ -1,37 +1,41 @@
 const express = require('express');
-const router = express.Router();
 const Order = require('./orderModel');
 const auth = require('./authMiddleware');
 
+const router = express.Router();
+
+router.get('/', auth, async (req, res) => {
+  try {
+    const orders = await Order.find().populate('user products.product');
+    res.json(orders);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 router.post('/', auth, async (req, res) => {
   try {
-    const order = await Order.create({ ...req.body, user: req.user.userId });
+    const order = await Order.create({ ...req.body, user: req.user._id });
     res.status(201).json(order);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 });
 
-router.get('/:id', auth, async (req, res) => {
+router.get('/:orderId', auth, async (req, res) => {
   try {
-    const order = await Order.findById(req.params.id).populate('products.product');
+    const order = await Order.findById(req.params.orderId).populate('user products.product');
     if (!order) return res.status(404).json({ error: 'Order not found' });
-    if (order.user.toString() !== req.user.userId && !req.user.isAdmin) {
-      return res.status(403).json({ error: 'Unauthorized' });
-    }
     res.json(order);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 });
 
-router.get('/user/:userId', auth, async (req, res) => {
+router.delete('/:orderId', auth, async (req, res) => {
   try {
-    if (req.params.userId !== req.user.userId && !req.user.isAdmin) {
-      return res.status(403).json({ error: 'Unauthorized' });
-    }
-    const orders = await Order.find({ user: req.params.userId }).populate('products.product');
-    res.json(orders);
+    await Order.findByIdAndDelete(req.params.orderId);
+    res.json({ message: 'Order deleted successfully' });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }

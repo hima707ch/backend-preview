@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 const userSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  role: { type: String, enum: ['buyer', 'seller'], required: true },
+  email: { type: String, required: true, unique: true },
   createdAt: { type: Date, default: Date.now }
 });
 
@@ -24,8 +24,8 @@ async function createDefaultAdmin() {
     if (!adminExists) {
       await User.create({
         username: 'admin',
-        password: 'admin',
-        role: 'seller'
+        email: 'admin@example.com',
+        password: 'admin'
       });
       console.log('Default admin user created');
     }
