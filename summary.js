@@ -1,36 +1,54 @@
 /*
 API Endpoints Summary:
 
-1. User Authentication:
-   - POST /api/auth/register
-     Request: { username: string, email: string, password: string }
-     Response: { message: string }
-   - POST /api/auth/login
-     Request: { username: string, password: string }
-     Response: { token: string }
+Authentication Module:
+1. POST /api/login
+   - Request: { username: string, password: string }
+   - Response: { token: string, userId: string, isAdmin: boolean }
 
-2. Products:
-   - GET /api/products
-     Response: [{ _id: string, name: string, description: string, price: number, stock: number }]
-   - POST /api/products
-     Request: { name: string, description: string, price: number, stock: number }
-     Response: { _id: string, name: string, description: string, price: number, stock: number }
-   - PUT /api/products/:productId
-     Request: { name?: string, description?: string, price?: number, stock?: number }
-     Response: { _id: string, name: string, description: string, price: number, stock: number }
-   - DELETE /api/products/:productId
-     Response: { message: string }
+2. POST /api/register
+   - Request: { username: string, password: string, email: string }
+   - Response: { message: string }
 
-3. Orders:
-   - GET /api/orders
-     Response: [{ _id: string, user: Object, products: Array, totalAmount: number, status: string }]
-   - POST /api/orders
-     Request: { products: [{ product: string, quantity: number }], totalAmount: number }
-     Response: { _id: string, user: string, products: Array, totalAmount: number, status: string }
-   - GET /api/orders/:orderId
-     Response: { _id: string, user: Object, products: Array, totalAmount: number, status: string }
-   - DELETE /api/orders/:orderId
-     Response: { message: string }
+Property Management Module:
+1. GET /api/properties
+   - Response: Array of property objects
 
-Note: All endpoints except /api/auth/register and /api/auth/login require authentication token in the Authorization header.
+2. POST /api/properties
+   - Request: { title: string, description: string, price: number, location: string }
+   - Response: Created property object
+
+3. GET /api/properties/:id
+   - Response: Single property object
+
+4. PUT /api/properties/:id
+   - Request: Updated property fields
+   - Response: Updated property object
+
+5. DELETE /api/properties/:id
+   - Response: { message: string }
+
+User Management Module:
+1. GET /api/user/:id
+   - Response: User object (excluding password)
+
+2. PUT /api/user/:id
+   - Request: Updated user fields
+   - Response: Updated user object
+
+3. GET /api/user/properties
+   - Response: Array of properties owned by user
+
+Admin Functions Module:
+1. GET /api/admin/users
+   - Response: Array of user objects
+
+2. DELETE /api/admin/users/:id
+   - Response: { message: string }
+
+3. GET /api/admin/properties
+   - Response: Array of all properties
+
+All protected routes require Authorization header with Bearer token.
+Admin routes require both authentication and admin privileges.
 */

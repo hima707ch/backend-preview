@@ -1,40 +1,35 @@
 const express = require('express');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const User = require('./userModel');
-
 const router = express.Router();
+const { User, Property } = require('./models');
+const auth = require('./middleware');
 
-router.post('/register', async (req, res) => {
-  try {
-    const user = new User(req.body);
-    await user.save();
-    res.status(201).json({ message: 'User registered successfully' });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
+router.get('/user/:id', auth, async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id).select('-password');
+        if (!user) return res.status(404).json({ message: 'User not found' });
+        res.json(user);
+    } catch (error) {
+        res.status(500).json({ message: 'Server error' });
+    }
 });
 
-router.post('/login', async (req, res) => {
-  try {
-    const { username, password } = req.body;
-    const user = await User.findOne({ username });
-    if (!user) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+router.put('/user/:id', auth, async (req, res) => {
+    try {
+        const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true }).select('-password');
+        if (!user) return res.status(404).json({ message: 'User not found' });
+        res.json(user);
+    } catch (error) {
+        res.status(400).json({ message: 'Update failed' });
     }
-    const isValid = await bcrypt.compare(password, user.password);
-    if (!isValid) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+});
+
+router.get('/user/properties', auth, async (req, res) => {
+    try {
+        const properties = await Property.find({ owner: req.user.userId });
+        res.json(properties);
+    } catch (error) {
+        res.status(500).json({ message: 'Server error' });
     }
-    const token = jwt.sign(
-      { userId: user._id, role: user.role },
-      'your-secret-key',
-      { expiresIn: '24h' }
-    );
-    res.json({ token, role: user.role });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
 });
 
 module.exports = router;
