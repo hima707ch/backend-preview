@@ -6,8 +6,10 @@ const propertySchema = new mongoose.Schema({
   price: { type: Number, required: true },
   location: { type: String, required: true },
   seller: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  createdAt: { type: Date, default: Date.now },
-  status: { type: String, enum: ['available', 'sold'], default: 'available' }
+  features: [String],
+  images: [String],
+  status: { type: String, enum: ['available', 'sold'], default: 'available' },
+  createdAt: { type: Date, default: Date.now }
 });
 
 const Property = mongoose.model('Property', propertySchema);
