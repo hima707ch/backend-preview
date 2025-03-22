@@ -4,7 +4,7 @@ API Endpoints Summary:
 Authentication Module:
 1. POST /api/login
    - Request: { username: string, password: string }
-   - Response: { token: string, userId: string, isAdmin: boolean }
+   - Response: { token: string, user: { id: string, username: string, isAdmin: boolean } }
 
 2. POST /api/register
    - Request: { username: string, password: string, email: string }
@@ -22,7 +22,7 @@ Property Management Module:
    - Response: Single property object
 
 4. PUT /api/properties/:id
-   - Request: Updated property fields
+   - Request: { title?: string, description?: string, price?: number, location?: string }
    - Response: Updated property object
 
 5. DELETE /api/properties/:id
@@ -33,13 +33,13 @@ User Management Module:
    - Response: User object (excluding password)
 
 2. PUT /api/user/:id
-   - Request: Updated user fields
+   - Request: { username?: string, email?: string }
    - Response: Updated user object
 
 3. GET /api/user/properties
    - Response: Array of properties owned by user
 
-Admin Functions Module:
+Admin Module:
 1. GET /api/admin/users
    - Response: Array of user objects
 
