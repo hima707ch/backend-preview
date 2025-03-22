@@ -4,6 +4,8 @@ require('dotenv').config();
 
 mongoose.connect(process.env.MONGODB_URI)
   .then(async () => {
+    console.log('Connected to MongoDB');
+
     // Create admin user
     const adminUser = new User({
       username: 'admin',
@@ -32,10 +34,10 @@ mongoose.connect(process.env.MONGODB_URI)
     ];
 
     await Property.insertMany(properties);
-    console.log('Sample data inserted successfully');
-    process.exit(0);
+    console.log('Sample data inserted');
+    process.exit();
   })
   .catch(err => {
-    console.error('Database initialization failed:', err);
+    console.error('MongoDB connection error:', err);
     process.exit(1);
   });

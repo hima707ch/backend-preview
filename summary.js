@@ -4,7 +4,7 @@ API Endpoints Summary:
 Authentication Module:
 1. POST /api/login
    - Request: { username: string, password: string }
-   - Response: { token: string, user: { id: string, username: string, isAdmin: boolean } }
+   - Response: { token: string }
 
 2. POST /api/register
    - Request: { username: string, password: string, email: string }
@@ -50,5 +50,5 @@ Admin Module:
    - Response: Array of all properties
 
 All protected routes require Authorization header with Bearer token.
-Admin routes require both authentication and admin privileges.
+Admin routes require admin privileges.
 */

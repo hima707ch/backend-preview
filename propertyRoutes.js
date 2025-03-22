@@ -1,34 +1,37 @@
 const express = require('express');
+const router = express.Router();
 const { Property } = require('./models');
 const auth = require('./middleware');
-const router = express.Router();
 
 router.get('/properties', async (req, res) => {
   try {
-    const properties = await Property.find().populate('owner', 'username');
+    const properties = await Property.find().populate('owner', 'username email');
     res.json(properties);
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: error.message });
   }
 });
 
 router.post('/properties', auth, async (req, res) => {
   try {
-    const property = new Property({ ...req.body, owner: req.user.userId });
+    const property = new Property({
+      ...req.body,
+      owner: req.user.userId
+    });
     await property.save();
     res.status(201).json(property);
   } catch (error) {
-    res.status(400).json({ message: 'Invalid property data' });
+    res.status(400).json({ message: error.message });
   }
 });
 
 router.get('/properties/:id', async (req, res) => {
   try {
-    const property = await Property.findById(req.params.id).populate('owner', 'username');
+    const property = await Property.findById(req.params.id).populate('owner', 'username email');
     if (!property) return res.status(404).json({ message: 'Property not found' });
     res.json(property);
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: error.message });
   }
 });
 
@@ -42,7 +45,7 @@ router.put('/properties/:id', auth, async (req, res) => {
     if (!property) return res.status(404).json({ message: 'Property not found' });
     res.json(property);
   } catch (error) {
-    res.status(400).json({ message: 'Update failed' });
+    res.status(400).json({ message: error.message });
   }
 });
 
@@ -52,7 +55,7 @@ router.delete('/properties/:id', auth, async (req, res) => {
     if (!property) return res.status(404).json({ message: 'Property not found' });
     res.json({ message: 'Property deleted successfully' });
   } catch (error) {
-    res.status(500).json({ message: 'Delete failed' });
+    res.status(500).json({ message: error.message });
   }
 });
 
