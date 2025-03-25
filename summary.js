@@ -1,37 +1,46 @@
 /*
 API Endpoints Summary:
 
-1. User Authentication:
-   a. POST /api/register
-      - Request body: { username, password, role }
-      - Role must be either 'buyer' or 'seller'
-      - Response: { message: 'User registered successfully' }
+1. Authentication:
+   - POST /api/login
+     Request: { username, password }
+     Response: { token, user: { username, email, role } }
+   
+   - POST /api/register
+     Request: { username, email, password }
+     Response: { token, user: { username, email, role } }
 
-   b. POST /api/login
-      - Request body: { username, password }
-      - Response: { token, role }
+2. User Management:
+   - GET /api/user/details
+     Headers: { Authorization: 'Bearer <token>' }
+     Response: { username, email, role, createdAt }
+   
+   - PUT /api/user/update
+     Headers: { Authorization: 'Bearer <token>' }
+     Request: { username, email }
+     Response: { username, email, role, createdAt }
 
-2. Property Management:
-   a. GET /api/properties
-      - Query parameters: minPrice, maxPrice, location (all optional)
-      - Response: Array of property objects
+3. Property Management:
+   - GET /api/properties/list
+     Query Params: Optional filters
+     Response: [{ title, description, price, location, owner, status }]
+   
+   - GET /api/properties/detail/:id
+     Response: { title, description, price, location, owner, status }
+   
+   - POST /api/properties/create
+     Headers: { Authorization: 'Bearer <token>' }
+     Request: { title, description, price, location, status }
+     Response: { property details }
+   
+   - PUT /api/properties/update/:id
+     Headers: { Authorization: 'Bearer <token>' }
+     Request: { title, description, price, location, status }
+     Response: { updated property details }
+   
+   - DELETE /api/properties/delete/:id
+     Headers: { Authorization: 'Bearer <token>' }
+     Response: { message: 'Property deleted successfully' }
 
-   b. GET /api/properties/:id
-      - Response: Single property object
-
-   c. POST /api/properties (Sellers only)
-      - Headers: Authorization: Bearer <token>
-      - Request body: { title, description, price, location, features, images }
-      - Response: Created property object
-
-   d. PUT /api/properties/:id (Sellers only)
-      - Headers: Authorization: Bearer <token>
-      - Request body: Updated property fields
-      - Response: Updated property object
-
-   e. DELETE /api/properties/:id (Sellers only)
-      - Headers: Authorization: Bearer <token>
-      - Response: { message: 'Property deleted successfully' }
-
-Note: All error responses follow the format: { message: 'Error description' }
+Note: All responses are in JSON format. Error responses include an 'error' field with description.
 */

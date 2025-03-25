@@ -1,38 +1,32 @@
 const express = require('express');
 const router = express.Router();
-const { User, Property } = require('./models');
-const auth = require('./middleware');
+const auth = require('./authMiddleware');
+const User = require('./userModel');
 
-router.get('/user/:id', auth, async (req, res) => {
-  try {
-    const user = await User.findById(req.params.id).select('-password');
-    if (!user) return res.status(404).json({ message: 'User not found' });
-    res.json(user);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
-
-router.put('/user/:id', auth, async (req, res) => {
-  try {
-    if (req.user.userId !== req.params.id) {
-      return res.status(403).json({ message: 'Unauthorized' });
+router.get('/details', auth, async (req, res) => {
+    try {
+        const user = await User.findById(req.user.userId).select('-password');
+        res.json(user);
+    } catch (error) {
+        res.status(500).json({ error: 'Server error' });
     }
-    const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true }).select('-password');
-    if (!user) return res.status(404).json({ message: 'User not found' });
-    res.json(user);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
 });
 
-router.get('/user/properties', auth, async (req, res) => {
-  try {
-    const properties = await Property.find({ owner: req.user.userId });
-    res.json(properties);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
+router.put('/update', auth, async (req, res) => {
+    try {
+        const updates = req.body;
+        delete updates.password; // Prevent password update through this route
+        
+        const user = await User.findByIdAndUpdate(
+            req.user.userId,
+            updates,
+            { new: true }
+        ).select('-password');
+        
+        res.json(user);
+    } catch (error) {
+        res.status(400).json({ error: 'Update failed' });
+    }
 });
 
 module.exports = router;

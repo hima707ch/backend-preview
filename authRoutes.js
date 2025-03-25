@@ -1,39 +1,36 @@
 const express = require('express');
+const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('./userModel');
 
-const router = express.Router();
+router.post('/login', async (req, res) => {
+    try {
+        const { username, password } = req.body;
+        const user = await User.findOne({ username });
+        
+        if (!user || !(await bcrypt.compare(password, user.password))) {
+            return res.status(401).json({ error: 'Invalid credentials' });
+        }
 
-router.post('/register', async (req, res) => {
-  try {
-    const { username, password, role } = req.body;
-    if (!['buyer', 'seller'].includes(role)) {
-      return res.status(400).json({ message: 'Invalid role' });
+        const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
+        res.json({ token, user: { username: user.username, email: user.email, role: user.role } });
+    } catch (error) {
+        res.status(500).json({ error: 'Server error' });
     }
-    const user = await User.create({ username, password, role });
-    res.status(201).json({ message: 'User registered successfully' });
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
 });
 
-router.post('/login', async (req, res) => {
-  try {
-    const { username, password } = req.body;
-    const user = await User.findOne({ username });
-    if (!user || !(await bcrypt.compare(password, user.password))) {
-      return res.status(401).json({ message: 'Invalid credentials' });
+router.post('/register', async (req, res) => {
+    try {
+        const { username, email, password } = req.body;
+        const user = new User({ username, email, password });
+        await user.save();
+        
+        const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
+        res.status(201).json({ token, user: { username: user.username, email: user.email, role: user.role } });
+    } catch (error) {
+        res.status(400).json({ error: 'Registration failed' });
     }
-    const token = jwt.sign(
-      { userId: user._id, role: user.role },
-      process.env.JWT_SECRET || 'your-secret-key',
-      { expiresIn: '24h' }
-    );
-    res.json({ token, role: user.role });
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
 });
 
 module.exports = router;
