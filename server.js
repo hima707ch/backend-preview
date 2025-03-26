@@ -2,9 +2,11 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
+
 const authRoutes = require('./authRoutes');
-const userRoutes = require('./userRoutes');
+const profileRoutes = require('./profileRoutes');
 const propertyRoutes = require('./propertyRoutes');
+const { authenticateToken } = require('./middleware');
 
 const app = express();
 
@@ -17,7 +19,7 @@ mongoose.connect(process.env.MONGODB_URI, {
 });
 
 app.use('/api', authRoutes);
-app.use('/api/user', userRoutes);
+app.use('/api/profile', authenticateToken, profileRoutes);
 app.use('/api/properties', propertyRoutes);
 
 const PORT = process.env.PORT || 3000;
